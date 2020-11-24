@@ -1,0 +1,49 @@
+package board.controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import board.model.*;
+import common.controller.AbstractController;
+import member.model.MemberVO;
+
+public class FaqDeleteAllAction extends AbstractController {
+
+	@Override
+	public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+	
+	//	String adminno = loginuser.getUserno();
+		int loginStatus = loginuser.getStatus();
+	
+	//	int loginStatus = 3;
+	//	String adminno = "0";
+		
+	//	String method = request.getMethod();
+		
+		if (loginStatus != 3) { // 관리자가 아닌 사람이 들어왔다면
+			// faq 목록 페이지로 보낸다.
+			super.setRedirect(true);
+			super.setViewPage(request.getContextPath() + "/board/faq.com");
+		}else { // 관리자가 들어오면 
+			
+			InterBoardDAO bdao = new BoardDAO();
+			
+			// 모든 FAQ 게시물을 삭제해줌 
+			int n = bdao.deleteAllFaq();
+			
+			if (n == 1) {
+				System.out.println("FAQ 전체 삭제 성공");
+			}
+			
+			super.setRedirect(true);
+			super.setViewPage(request.getContextPath() + "/board/faq.com");
+		}	
+			
+			
+	}
+
+}
